@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#123F52">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="כריתים 2026">
+<title>כריתים 2026 · המסלול שלנו</title>
+<style>
+  :root{
+    --paper:#EEF2F1;
+    --paper-2:#E4EAE7;
+    --ink:#16262B;
+    --ink-soft:#4C5C5F;
+    --aegean:#123F52;
+    --aegean-2:#1B5670;
+    --aegean-light:#4C93A8;
+    --gold:#D9A441;
+    --gold-deep:#B87F26;
+    --olive:#6F7F4C;
+    --coral:#C1543A;
+    --line:#D3DAD5;
+    --white:#FBFBF8;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; height:100%; }
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Assistant', -apple-system, sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overscroll-behavior-y:none;
+  }
+  @font-face{}
+  h1,h2,h3{ font-family:'Frank Ruhl Libre', serif; margin:0; }
+  p{ margin:0; }
+  .eyebrow{ font-family:'Heebo', sans-serif; font-size:11px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--aegean-2); }
+
+  /* ============ APP SHELL ============ */
+  #app{ max-width:560px; margin:0 auto; min-height:100%; display:flex; flex-direction:column; }
+
+  header.top{
+    position:sticky; top:0; z-index:20;
+    background:linear-gradient(160deg, var(--aegean) 0%, #0C2E3D 100%);
+    padding:calc(14px + var(--safe-top)) 20px 16px;
+    color:var(--white);
+  }
+  .top-row{ display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .top-title{ font-size:20px; font-weight:700; }
+  .top-title small{ display:block; font-family:'Heebo',sans-serif; font-size:11px; font-weight:500; letter-spacing:.08em; color:#BFD8E0; margin-top:2px; }
+  .today-pill{
+    background:var(--gold); color:#3C2A06;
+    font-family:'Heebo',sans-serif; font-size:12px; font-weight:700;
+    padding:7px 12px; border-radius:100px; white-space:nowrap;
+  }
+
+  main{ flex:1; padding:16px 16px calc(90px + var(--safe-bottom)); }
+  .view{ display:none; animation:fade .25s ease; }
+  .view.active{ display:block; }
+  @keyframes fade{ from{ opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
+
+  /* bottom tab bar */
+  nav.tabbar{
+    position:fixed; bottom:0; left:0; right:0; z-index:30;
+    max-width:560px; margin:0 auto;
+    background:var(--white);
+    border-top:1px solid var(--line);
+    display:flex;
+    padding-bottom:var(--safe-bottom);
+    box-shadow:0 -6px 20px -14px rgba(0,0,0,.3);
+  }
+  .tab-btn{
+    flex:1; background:none; border:none; padding:10px 4px 8px;
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    font-family:'Heebo',sans-serif; font-size:11px; font-weight:600;
+    color:var(--ink-soft); cursor:pointer;
+  }
+  .tab-btn .ic{ font-size:20px; line-height:1; }
+  .tab-btn.active{ color:var(--aegean); }
+  .tab-btn.active .ic{ transform:translateY(-1px); }
+
+  /* ============ SECTION HEAD ============ */
+  .sec-head{ margin:6px 2px 14px; }
+  .sec-head h2{ font-size:22px; }
+  .sec-head p{ color:var(--ink-soft); font-size:13.5px; margin-top:5px; }
+
+  /* ============ DAY ACCORDION ============ */
+  .day{
+    background:var(--white);
+    border-radius:16px;
+    margin-bottom:12px;
+    border:1px solid var(--line);
+    overflow:hidden;
+  }
+  .day.is-today{ border-color:var(--gold); box-shadow:0 0 0 2px rgba(217,164,65,.35); }
+  .day-head{
+    width:100%; background:none; border:none; text-align:right;
+    display:flex; align-items:center; gap:12px; padding:14px 16px;
+    cursor:pointer; font-family:inherit;
+  }
+  .day-num{
+    font-family:'Frank Ruhl Libre',serif; font-size:14px; font-weight:700;
+    color:var(--white); background:var(--aegean);
+    width:34px; height:34px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .day.is-today .day-num{ background:var(--gold); color:#3C2A06; }
+  .day-head-txt{ flex:1; min-width:0; }
+  .day-date{ font-family:'Heebo',sans-serif; font-size:10.5px; letter-spacing:.08em; color:var(--ink-soft); text-transform:uppercase; }
+  .day-title{ font-size:15.5px; font-weight:700; margin-top:1px; }
+  .today-tag{ font-family:'Heebo',sans-serif; font-size:10px; font-weight:700; color:#3C2A06; background:var(--gold); padding:3px 8px; border-radius:100px; flex-shrink:0; }
+  .chev{ color:var(--ink-soft); font-size:13px; transition:transform .2s; flex-shrink:0; }
+  .day.open .chev{ transform:rotate(180deg); }
+
+  .day-body{ display:none; padding:0 16px 16px; }
+  .day.open .day-body{ display:block; }
+
+  .tide{ display:flex; height:28px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px var(--line); margin-bottom:10px; }
+  .tide-seg{ display:flex; align-items:center; justify-content:center; font-family:'Heebo',sans-serif; font-size:9.5px; font-weight:700; color:rgba(255,255,255,.95); overflow:hidden; padding:0 4px; white-space:nowrap;}
+  .seg-excursion{ background:var(--gold); color:#3C2A06;}
+  .seg-hotel{ background:var(--aegean-light); }
+  .seg-city{ background:var(--olive); }
+
+  .blk{ margin-bottom:8px; font-size:13.5px; color:var(--ink-soft); }
+  .blk b{ color:var(--ink); }
+  .blk-label{ font-family:'Heebo',sans-serif; font-size:10.5px; font-weight:700; color:var(--ink); margin-bottom:2px; display:block;}
+  .tip{ background:var(--paper); border-radius:10px; padding:10px 12px; font-size:12.5px; color:var(--ink-soft); border-inline-start:3px solid var(--gold); margin-top:8px; }
+  .tip b{ color:var(--ink); }
+
+  /* ============ CARDS (hotel / info) ============ */
+  .card{ background:var(--white); border:1px solid var(--line); border-radius:16px; padding:16px 18px; margin-bottom:12px; }
+  .card h3{ font-size:15.5px; display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+  .card h3 .ic{ font-size:18px; }
+  .card ul{ margin:0; padding-inline-start:18px; }
+  .card li{ font-size:13.5px; color:var(--ink-soft); margin-bottom:5px; }
+  .card p{ font-size:13.5px; color:var(--ink-soft); }
+  .card p + p{ margin-top:6px; }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .stat{ background:var(--paper); border-radius:12px; padding:10px 12px;}
+  .stat .l{ font-family:'Heebo',sans-serif; font-size:10px; letter-spacing:.06em; color:var(--ink-soft); text-transform:uppercase;}
+  .stat .v{ font-size:14.5px; font-weight:700; margin-top:2px; }
+  .chip{ display:inline-block; font-family:'Heebo',sans-serif; font-size:11px; font-weight:700; padding:4px 10px; border-radius:100px; margin:0 0 8px; }
+  .chip-yes{ background:#EAF2E7; color:var(--olive); }
+  .chip-no{ background:#F7E7E2; color:var(--coral); }
+
+  a.tel{ color:var(--aegean-2); font-weight:700; text-decoration:none; }
+
+  /* ============ CHECKLIST ============ */
+  .cl-cat{ margin:18px 0 8px; }
+  .cl-cat:first-child{ margin-top:0; }
+  .cl-cat h3{ font-size:13px; font-family:'Heebo',sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--aegean-2); }
+  .cl-item{
+    display:flex; align-items:center; gap:10px;
+    background:var(--white); border:1px solid var(--line);
+    border-radius:12px; padding:11px 14px; margin-bottom:8px;
+    font-size:14px;
+  }
+  .cl-item input{ width:19px; height:19px; accent-color:var(--aegean); flex-shrink:0; }
+  .cl-item label{ flex:1; }
+  .cl-item.checked label{ color:var(--ink-soft); text-decoration:line-through; }
+  .cl-progress{ font-family:'Heebo',sans-serif; font-size:12px; color:var(--ink-soft); margin-bottom:10px; }
+  .cl-reset{ margin-top:16px; width:100%; background:var(--white); border:1px solid var(--line); color:var(--coral); font-family:'Heebo',sans-serif; font-weight:700; font-size:13px; padding:11px; border-radius:12px; }
+
+  ::selection{ background:var(--gold); color:#3C2A06; }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700&family=Assistant:wght@400;500;600;700&family=Heebo:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="app">
+
+  <header class="top">
+    <div class="top-row">
+      <div class="top-title">כריתים 2026<small>Royal & Imperial Belvedere · חרסוניסוס</small></div>
+      <div class="today-pill" id="todayPill">24.7–2.8</div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ===================== TAB 1: מסלול ===================== -->
+    <section class="view active" id="view-itinerary">
+      <div class="sec-head">
+        <div class="eyebrow">10 ימים · 9 לילות</div>
+        <h2>המסלול היומי</h2>
+        <p>לחצו על יום כדי לפתוח. היום הנוכחי מסומן בזהב ונפתח אוטומטית.</p>
+      </div>
+      <div id="daysList"></div>
+    </section>
+
+    <!-- ===================== TAB 2: המלון ===================== -->
+    <section class="view" id="view-hotel">
+      <div class="sec-head">
+        <div class="eyebrow">Royal & Imperial Belvedere</div>
+        <h2>המלון שלנו</h2>
+        <p>גבעה בלב חרסוניסוס — Star Beach כ-400 מ' הליכה, מרכז העיר כ-10 דקות הליכה.</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">🍽️</span> All Inclusive — מה כלול</h3>
+        <span class="chip chip-yes">✓ כלול</span>
+        <p>ארוחות בופה ב-2 מסעדות (Royal + Imperial) · משקאות מקומיים בכל הברים · 2 בארי חטיפים (סטריט פוד + פאסט פוד) · שאטל חינם לחוף 3× ביום</p>
+        <div style="margin-top:10px;">
+          <span class="chip chip-no">✗ בתוספת תשלום + הזמנה</span>
+          <p>Kafeneio (א-לה-קארט יווני) · Imperial Sakura Savor (אסייתי) · Dimitra Beer House · ספא/עיסויים</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">🏊</span> בריכות</h3>
+        <p>כ-6 בריכות חוץ (כולל בריכת אולימפי), בריכה מקורה עונתית, ו-2 בריכות ילדים — אחת עם ספריי פארק ומגלשות מיני.</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">🎯</span> אטרקציות וספורט</h3>
+        <ul>
+          <li>מועדון ילדים + מיני-דיסקו</li>
+          <li>2 מגרשי משחקים, חדר משחקי וידאו</li>
+          <li>3 מגרשי טניס, מיני גולף, כדורעף חוף</li>
+          <li>חדר כושר + סאונה, שיעורי אקווה-אירובי/יוגה</li>
+          <li>אנימציה והופעות ערב</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">📍</span> מרחקים מהמלון</h3>
+        <div class="row2">
+          <div class="stat"><div class="l">Star Beach</div><div class="v">400 מ' הליכה</div></div>
+          <div class="stat"><div class="l">מרכז העיר</div><div class="v">כ-10 דק' הליכה</div></div>
+          <div class="stat"><div class="l">שדה תעופה</div><div class="v">כ-30 דק' נסיעה</div></div>
+          <div class="stat"><div class="l">רחוב 25 במרץ</div><div class="v">קניות, הליכה</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== TAB 3: מידע ===================== -->
+    <section class="view" id="view-info">
+      <div class="sec-head">
+        <div class="eyebrow">שימושי לטיול</div>
+        <h2>מידע חשוב</h2>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">✈️</span> טיסות</h3>
+        <div class="row2">
+          <div class="stat"><div class="l">הלוך</div><div class="v">24.7 · צהריים</div></div>
+          <div class="stat"><div class="l">חזור</div><div class="v">2.8 · צהריים</div></div>
+        </div>
+        <p style="margin-top:8px;">חברת Blue Bird · תל אביב ⇄ הרקליון (HER)</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">🚗</span> רכב שכור</h3>
+        <p>נחוץ ליום הטרקטורונים, Acqua Plus, יום השייט ואופציית Watercity. Star Beach והעיר — הליכה, לא חובה רכב.</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">📞</span> טלפונים חשובים</h3>
+        <ul>
+          <li>חירום כללי (משטרה/מד"א/כיבוי): <a class="tel" href="tel:112">112</a></li>
+          <li>המלון: להשלים בעת ההזמנה</li>
+          <li>הזמנת שייט/טרקטורונים: לתאם מראש — מומלץ יום-יומיים לפני</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">💶</span> כסף</h3>
+        <p>מטבע: יורו (€). כרטיסי אשראי מתקבלים כמעט בכל מקום, אבל שווה מזומן קטן לחניה/שירותים ציבוריים/טיפים.</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">☀️</span> מזג אוויר צפוי</h3>
+        <p>סוף יולי–תחילת אוגוסט: 30–34°C, שמש כמעט תמידית. שתייה מרובה, כובעים וקרם הגנה — כל יום, גם בימי המלון.</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="ic">🛥️</span> יום השייט — מפרץ מיראבלו</h3>
+        <p>אגיוס ניקולאוס / אלונדה, כ-40 דק' נסיעה. שייט עצמאי ללא רישיון, עד 6–8 נוסעים. יעדים: אי ספינלונגה, חוף קולוקיתה, כפר פלאקה. עלות משוערת: 150–250€ ל-3–4 שעות + דלק. אפשר להביא אוכל ושתייה מהמלון.</p>
+      </div>
+    </section>
+
+    <!-- ===================== TAB 4: ציוד ===================== -->
+    <section class="view" id="view-packing">
+      <div class="sec-head">
+        <div class="eyebrow">רשימת ציוד</div>
+        <h2>מה לקחת</h2>
+      </div>
+      <div class="cl-progress" id="clProgress"></div>
+      <div id="packingList"></div>
+      <button class="cl-reset" id="clReset">איפוס הרשימה</button>
+    </section>
+
+  </main>
+
+  <nav class="tabbar">
+    <button class="tab-btn active" data-view="view-itinerary"><span class="ic">📅</span>מסלול</button>
+    <button class="tab-btn" data-view="view-hotel"><span class="ic">🏨</span>המלון</button>
+    <button class="tab-btn" data-view="view-info"><span class="ic">ℹ️</span>מידע</button>
+    <button class="tab-btn" data-view="view-packing"><span class="ic">✅</span>ציוד</button>
+  </nav>
+
+</div>
+
+<script>
+/* ---------- TAB SWITCHING ---------- */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.view).classList.add('active');
+    window.scrollTo(0,0);
+  });
+});
+
+/* ---------- DAY DATA ---------- */
+const days = [
+  { n:1, date:"2026-07-24", weekday:"שישי", title:"הגעה לאי", tags:["excursion:0","hotel:9","city:1"],
+    body:`<div class="blk"><span class="blk-label">אחה"צ</span>נחיתה בהרקליון (Blue Bird), איסוף רכב שכור, כ-30 דקות נסיעה למלון. צ'ק־אין מ-15:00.</div>
+    <div class="blk"><span class="blk-label">ערב</span>היכרות עם המלון והבריכות, ארוחת ערב <b>בבופה (כלול)</b>, מנוחה מהטיסה.</div>
+    <div class="tip"><b>לרכב:</b> Star Beach והעיר הליכה מהמלון — אבל טרקטורונים, Acqua Plus ויום השייט דורשים נסיעה.</div>` },
+
+  { n:2, date:"2026-07-25", weekday:"שבת", title:"Star Beach — ספורט ימי", tags:["excursion:3","hotel:4","city:2"],
+    body:`<div class="blk"><span class="blk-label">בוקר</span>Star Beach במרחק הליכה (400 מ')! כניסה חופשית, תשלום רק על <b>ג'ט סקי, פאראסיילינג, בננה, טאבים</b>. מגלשות ולייזי ריבר לכולם.</div>
+    <div class="blk"><span class="blk-label">14:00</span>חזרה למלון ברגל, בריכה ומנוחה.</div>
+    <div class="tip"><b>ערב:</b> ארוחה בבופה (כלול), אח"כ הליכה לטיילת חרסוניסוס — גלידה, לא ארוחה.</div>` },
+
+  { n:3, date:"2026-07-26", weekday:"ראשון", title:"ספארי טרקטורונים / באגי", tags:["excursion:3","hotel:7"],
+    body:`<div class="blk"><span class="blk-label">בוקר</span>ספארי מודרך בהרים, כ-10 דק' נסיעה (MotoXperience). הבן כנוסע; הבנות אולי נהיגה עצמאית בהתאם למדיניות — <b>לתאם מראש</b>.</div>
+    <div class="blk"><span class="blk-label">צהריים ואילך</span>מקלחת ואז יום ארוך במלון — יום מאובק ושמשי.</div>` },
+
+  { n:4, date:"2026-07-27", weekday:"שני", title:"Acqua Plus — פארק מים", tags:["excursion:5","hotel:5"],
+    body:`<div class="blk"><span class="blk-label">בוקר מוקדם</span>פתיחה 10:00 — כדאי להגיע מוקדם, מגלשות נסגרות כ-17:00.</div>
+    <div class="blk"><span class="blk-label">15:00-16:00</span>חזרה למלון, ערב בבופה (כלול) ואז רגוע או הליכה קצרה.</div>` },
+
+  { n:5, date:"2026-07-28", weekday:"שלישי", title:"יום מלון מלא — נשימה", tags:["hotel:9","city:1"],
+    body:`<div class="blk"><span class="blk-label">כל היום</span>אחרי 3 ימי אטרקציות רצופים — יום שלם בלי לצאת. בריכה, חוף, מיני-גולף, טניס.</div>
+    <div class="blk"><span class="blk-label">ערב</span>ארוחה בבופה (כלול), הכנה ליום העיר מחר.</div>` },
+
+  { n:6, date:"2026-07-29", weekday:"רביעי", title:"עיר, קניות ולונה פארק", tags:["city:2","hotel:5","city:2"],
+    body:`<div class="blk"><span class="blk-label">בוקר</span>קניות ברחוב 25th of March — 10 דק' הליכה. <b>חוזרים לפני הצהריים לבופה במלון</b> — לא אוכלים בעיר.</div>
+    <div class="blk"><span class="blk-label">אחה"צ</span>בריכה ומתקני מלון.</div>
+    <div class="tip"><b>ערב:</b> ארוחה בבופה (כלול), אח"כ הליכה לאזור Star Beach — לונה פארק/מיני גולף. מתאים לגיל 17.</div>` },
+
+  { n:7, date:"2026-07-30", weekday:"חמישי", title:"שייט עצמאי — מפרץ מיראבלו", tags:["excursion:6","hotel:2"],
+    body:`<div class="blk"><span class="blk-label">בוקר</span>כ-40 דק' נסיעה לאגיוס ניקולאוס/אלונדה. שכירת סירה עצמאית (ללא רישיון, עד 6-8 נוסעים) אחרי תדריך קצר.</div>
+    <div class="blk"><span class="blk-label">3-4 שעות</span>שיט לאי ספינלונגה, שחייה בחוף קולוקיתה, ביקור בכפר פלאקה.</div>
+    <div class="tip"><b>אוכל:</b> קחו כריכים/פירות מהבופה למען הסירה. עלות: 150-250€ + דלק. חזרה לארוחה במלון (כלול).</div>` },
+
+  { n:8, date:"2026-07-31", weekday:"שישי", title:"יום ים גמיש / Watercity", tags:["excursion:5","hotel:3"],
+    body:`<div class="blk"><span class="blk-label">אופציה א׳</span>חזרה ל-Star Beach (הליכה) לעוד סבב ג'ט סקי.</div>
+    <div class="blk"><span class="blk-label">אופציה ב׳</span>Watercity — פארק המים הגדול באי, כ-20-25 דק' נסיעה.</div>
+    <div class="tip"><b>ערב:</b> ארוחת סיום בבופה (כלול). Olive Tree/Kafeneio בתוספת תשלום אם בא לכם משהו מיוחד.</div>` },
+
+  { n:9, date:"2026-08-01", weekday:"שבת", title:"יום מלון מלא", tags:["hotel:8","city:2"],
+    body:`<div class="blk"><span class="blk-label">כל היום</span>ניצול מלא של המלון — בריכות, ספא סמוך, טניס, מועדון ילדים.</div>
+    <div class="blk"><span class="blk-label">אחה"צ</span>קפיצה אחרונה לעיר לקניות/מזכרות. ארוזים מוקדם.</div>` },
+
+  { n:10, date:"2026-08-02", weekday:"ראשון", title:"חזרה הביתה", tags:["hotel:2","city:5"],
+    body:`<div class="blk"><span class="blk-label">בוקר</span>צ'ק-אאוט עד 12:00, יציאה מהמלון כ-09:00-09:30.</div>
+    <div class="blk"><span class="blk-label">לפני הטיסה</span>החזרת רכב, הגעה 2.5-3 שעות לפני הטיסה.</div>` },
+];
+
+const segClass = { excursion:"seg-excursion", hotel:"seg-hotel", city:"seg-city" };
+function tideHTML(tags){
+  return tags.map(t=>{
+    const [k,v] = t.split(":");
+    if(+v===0) return "";
+    return `<div class="tide-seg ${segClass[k]}" style="flex:${v}"></div>`;
+  }).join("");
+}
+
+const todayISO = new Date().toISOString().slice(0,10);
+const list = document.getElementById('daysList');
+let todayIdx = -1;
+days.forEach((d,i)=>{ if(d.date===todayISO) todayIdx = i; });
+
+days.forEach((d,i)=>{
+  const isToday = i===todayIdx;
+  const el = document.createElement('div');
+  el.className = 'day' + (isToday ? ' is-today open' : '');
+  el.innerHTML = `
+    <button class="day-head" data-idx="${i}">
+      <div class="day-num">${d.n}</div>
+      <div class="day-head-txt">
+        <div class="day-date">${d.weekday} · ${d.date.slice(8,10)}.${d.date.slice(5,7)}</div>
+        <div class="day-title">${d.title}</div>
+      </div>
+      ${isToday ? '<span class="today-tag">היום</span>' : ''}
+      <span class="chev">▾</span>
+    </button>
+    <div class="day-body">
+      <div class="tide">${tideHTML(d.tags)}</div>
+      ${d.body}
+    </div>`;
+  list.appendChild(el);
+});
+
+document.getElementById('daysList').addEventListener('click', e=>{
+  const head = e.target.closest('.day-head');
+  if(!head) return;
+  head.parentElement.classList.toggle('open');
+});
+
+if(todayIdx >= 0){
+  document.getElementById('todayPill').textContent = "היום: יום " + days[todayIdx].n;
+}
+
+/* ---------- PACKING CHECKLIST ---------- */
+const packing = {
+  "מסמכים": ["דרכונים","כרטיסי טיסה","אישור מלון","ביטוח נסיעות","רישיון נהיגה בינלאומי"],
+  "ים ומים": ["בגדי ים (כפול לכל אחד)","קרם הגנה SPF50","משקפי שחייה","כפכפי ים","מגבות חוף קלות"],
+  "אדרנלין (טרקטורונים/שייט)": ["נעליים סגורות לטרקטורונים","בגדים שאפשר ללכלך","משקפי שמש עם רצועה","כובעים לכולם"],
+  "כללי": ["מטען נייד + כבלים","מתאם חשמל אירופאי","תרופות אישיות","משחה לעקיצות/כוויות שמש","תיק יום קטן לטיולים"],
+};
+const plWrap = document.getElementById('packingList');
+let allItems = [];
+Object.entries(packing).forEach(([cat, items])=>{
+  const catDiv = document.createElement('div');
+  catDiv.className = 'cl-cat';
+  catDiv.innerHTML = `<h3>${cat}</h3>`;
+  items.forEach(item=>{
+    const id = 'pk-' + item.replace(/\s+/g,'-');
+    allItems.push(id);
+    const row = document.createElement('div');
+    row.className = 'cl-item';
+    row.innerHTML = `<input type="checkbox" id="${id}"><label for="${id}">${item}</label>`;
+    catDiv.appendChild(row);
+  });
+  plWrap.appendChild(catDiv);
+});
+
+function loadPacking(){
+  let saved = {};
+  try{ saved = JSON.parse(localStorage.getItem('crete-packing')||'{}'); }catch(e){}
+  allItems.forEach(id=>{
+    const cb = document.getElementById(id);
+    if(saved[id]){ cb.checked = true; cb.closest('.cl-item').classList.add('checked'); }
+  });
+  updateProgress();
+}
+function savePacking(){
+  const state = {};
+  allItems.forEach(id=>{ state[id] = document.getElementById(id).checked; });
+  try{ localStorage.setItem('crete-packing', JSON.stringify(state)); }catch(e){}
+}
+function updateProgress(){
+  const total = allItems.length;
+  const done = allItems.filter(id=>document.getElementById(id).checked).length;
+  document.getElementById('clProgress').textContent = `${done} מתוך ${total} נארזו`;
+}
+plWrap.addEventListener('change', e=>{
+  if(e.target.type!=='checkbox') return;
+  e.target.closest('.cl-item').classList.toggle('checked', e.target.checked);
+  savePacking();
+  updateProgress();
+});
+document.getElementById('clReset').addEventListener('click', ()=>{
+  allItems.forEach(id=>{
+    const cb = document.getElementById(id);
+    cb.checked = false;
+    cb.closest('.cl-item').classList.remove('checked');
+  });
+  savePacking();
+  updateProgress();
+});
+loadPacking();
+</script>
+</body>
+</html>
